@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: django-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      project: django-app
+  template:
+    metadata:
+      labels:
+        project: django-app
+    spec:
+      containers:
+        - name: django-app
+          image: gulfia83/django_app:latest
+          envFrom:
+            - secretRef:
+                name: django-secret
+          ports:
+            - containerPort: 80

@@ -227,7 +227,7 @@ $ docker compose build web
     apiVersion: v1
     kind: Secret
     metadata:
-      name: ssl-cert-secret
+      name: pg-root-cert
     data:
       root.crt: <base64_encoded_ssl_certificate>
     ```
@@ -249,6 +249,86 @@ $ docker compose build web
     ```bash
     psql "host=<postgres_host> port=<postgres_port> dbname=<db_name> user=<user_name> password=<user_password>"
     ```
+
+### Добавление переменных окружения
+
+1. Создайте `YAML` файл c чувствительными переменными:
+
+@    ```yaml
+    apiVersion: v1
+    kind: Secret
+    metadata:
+      name: django-secrets
+    type: Opaque
+    data:
+      SECRET_KEY: 'base64_secret_key'
+      DATABASE_URL: 'base64_database_url'
+      ALLOWED_HOSTS: 'base64_allowed_hosts'
+    ```
+
+Все значения переменных должны быть закодированы в `BASE64`.
+
+2. Создайте сущностm `Secret` в вашем кластере:
+    ```bash
+    kubectl apply -f path/to/django-secret.yml
+
+    ```
+
+### Создание Deployment
+1. Загрузите ваш Docker Image в Docker Hub
+2. Пропишите свою конфигурацию в YAML файл
+    
+3. Создайте сущность `Deployment` в кластере:
+    ```bash
+    kubectl apply -f path/to/django-deployment.yml
+    ```
+### Применение миграций
+1. Пропишите свою конфигурацию в YAML файл
+  
+2. Создайте сущность Job. После создания она сразу же запустится и применит миграции.
+    ```bash
+    kubectl apply -f path/to/django-migrate.yml
+    ```
+3. Для отслеживания статуса Job используйте:
+    ```bash
+    kubectl get job
+    ```
+    Она должна иметь статус `Completed`.
+### Создание superuser
+1. Получите список подов с помощью:
+    ```bash
+    kubectl get pods
+    ```
+2. Выполните вход в любой из подов, принадлежащих deployment с джанго:
+    ```bash
+    kubectl exec -it <django_pod_name> -- /bin/bash
+    ```
+3. Создайте superuser с помощью:
+    ```bash
+    python manage.py createsuperuser
+    ```
+4. Выйдите из пода:
+    ```bash
+    exit
+    ```
+### Создание Service
+1. Пропишите свою конфигурацию в YAML файл:
+
+2. Создайте сущность Service с помощью:
+    ```bash
+    kubectl apply -f path/to/django-service.yml
+    ```
+
+### Регулярная очистка сессий с помощью CronJob
+1. Пропишите свою конфигурацию в YAML файл:
+
+2. Создайте сущность CronJob с помощью команды:
+    ```bash
+    kubectl apply -f path/to/django-clearsessions.yml
+    ```
+    Эта задача будет производить очистку сессий каждую неделю.
+
+[Пример сайта](https://edu-determined-johnson.sirius-k8s.dvmn.org/)
 
 ***
 Код написан в учебных целях — это урок в курсе по Python и веб-разработке на сайте [Devman](https://dvmn.org).

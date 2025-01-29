@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: django-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      project: django-app
+  template:
+    metadata:
+      labels:
+        project: django-app
+    spec:
+      volumes:
+        - name: ssl-cert-volume
+          secret:
+            secretName: pg-root-cert
+            defaultMode: 384
+      containers:
+        - name: django-app
+          image: gulfia83/django_app:latest
+          volumeMounts:
+          - name: ssl-cert-volume
+            readOnly: true
+            mountPath: "/root/.postgresql"
+          envFrom:
+            - secretRef:
+                name: django-secret
+          ports:
+            - containerPort: 80

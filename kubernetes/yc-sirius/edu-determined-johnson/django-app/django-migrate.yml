@@ -1,0 +1,29 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: django-migrate
+spec:
+  backoffLimit: 2
+  activeDeadlineSeconds: 60
+  template:
+    spec:
+      volumes:
+        - name: ssl-cert-volume
+          secret:
+            secretName: pg-root-cert
+            defaultMode: 384
+      containers:
+      - name: django-app-migrate
+        image: gulfia83/django_app:latest
+        args: 
+        - /bin/bash
+        - -c
+        - python manage.py migrate --noinput
+        volumeMounts:
+          - name: ssl-cert-volume
+            readOnly: true
+            mountPath: "/root/.postgresql"
+        envFrom:
+          - secretRef:
+              name: django-secret
+      restartPolicy: Never

@@ -196,5 +196,29 @@ $ docker compose build web
     ```
     Эта задача будет производить очистку сессий каждую неделю.
 
+## Развёртывание dev-версии в кластере Yandex Cloud
+
+### Подготовка к развёртыванию
+1. Получите доступ к кластеру у его администратора.
+2. Установите и инициализируйте [Yandex Cloud CLI](https://yandex.cloud/ru/docs/cli/quickstart#install).
+3. Добавьте учётные данные кластера в конфигурационный файл kubectl:
+    ```bash
+    yc managed-kubernetes cluster get-credentials --id cat528346gdueh53ts39 --external
+    ```
+### Запуск nginx
+1. Создайте YAML конфигурацию для `Pod`
+   
+2. Создайте сущность `Pod`
+    ```bash
+    kubectl apply -f path/to/nginx-pod.yml
+    ```
+3. Создайте YAML конфигурацию для `Service`
+   
+4. Создайте сущность `Service`
+    ```bash
+    kubectl apply -f path/to/nginx-service.yml
+    ```
+5. Nginx будет доступен по вашему домену.
+
 ***
 Код написан в учебных целях — это урок в курсе по Python и веб-разработке на сайте [Devman](https://dvmn.org).

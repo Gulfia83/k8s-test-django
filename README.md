@@ -330,5 +330,7 @@ $ docker compose build web
 
 [Пример сайта](https://edu-determined-johnson.sirius-k8s.dvmn.org/)
 
+[Сслыка на инфраструктуру](https://sirius-env-registry.website.yandexcloud.net/edu-determined-johnson.html)
+
 ***
 Код написан в учебных целях — это урок в курсе по Python и веб-разработке на сайте [Devman](https://dvmn.org).

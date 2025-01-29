@@ -220,5 +220,35 @@ $ docker compose build web
     ```
 5. Nginx будет доступен по вашему домену.
 
+### Подключение к PostgreSQL
+1. Проверьте, присутствует ли в вашем `namespace` секрет с ssl сертификатом для PostgreSQL. Если присутствует, переходите сразу к п.4. Если нет, то получите ваш ssl сертификат [по этой инструкции](https://yandex.cloud/ru/docs/managed-postgresql/operations/connect#get-ssl-cert).
+2. Создайте YAML конфигурацию для `Secret` с сертификатом:
+    ```yaml
+    apiVersion: v1
+    kind: Secret
+    metadata:
+      name: ssl-cert-secret
+    data:
+      root.crt: <base64_encoded_ssl_certificate>
+    ```
+3. Создайте сущность `Secret` с помощью:
+    ```bash
+    kubectl apply -f path/to/secret.yaml
+    ```
+4. Создайте YAML конфигурацию для `Deployment` пода с Ubuntu, с помощью которого вы будете подключаться к СУБД.
+    
+6. Создайте сущность `Deployment` с помощью:
+    ```bash
+    kubectl apply -f path/to/ubuntu-deployment.yml
+    ```
+7. Зайдите в shell контейнера с помощью:
+    ```bash
+    kubectl exec -it <pod_name> -- /bin/bash
+    ```
+8. Подключитесь к СУБД:
+    ```bash
+    psql "host=<postgres_host> port=<postgres_port> dbname=<db_name> user=<user_name> password=<user_password>"
+    ```
+
 ***
 Код написан в учебных целях — это урок в курсе по Python и веб-разработке на сайте [Devman](https://dvmn.org).
